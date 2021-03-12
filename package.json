@@ -4,8 +4,26 @@
   "description": "Backend de la platforme",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.js",
+    "start": "node server.js"
   },
   "author": "Kaym Kassai",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "cloudinary": "^1.25.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-jwt": "^6.0.0",
+    "firebase-admin": "^9.5.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.12.0",
+    "morgan": "^1.10.0",
+    "slugify": "^1.4.7",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
 }
