@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema(
 		},
 		role: {
 			type: String,
-			default: 'Customer'
+			default: 'customer',
+			enum: [ 'customer', 'referent', 'sysadmin' ]
 		},
 		cart: {
 			type: Array,
@@ -32,7 +33,8 @@ const userSchema = new mongoose.Schema(
 		],
 		island: {
 			type: String,
-			required: [ true, 'Island name is required' ]
+			required: [ true, 'Island name is required' ],
+			enum: [ 'anjouan', 'ngazidja', 'moheli' ]
 		},
 		city: {
 			type: String,
