@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema(
 		address: {
 			type: String,
 			required: [ true, 'Address is required' ]
+		},
+		referent_account_approval: {
+			type: Boolean,
+			default: false
 		}
 	},
 	{ timestamps: true }
