@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema(
 		island: {
 			type: String,
 			required: [ true, 'Island name is required' ],
-			enum: [ 'anjouan', 'ngazidja', 'moheli' ]
+			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
 		},
 		city: {
 			type: String,
@@ -45,8 +45,9 @@ const userSchema = new mongoose.Schema(
 			required: [ true, 'Address is required' ]
 		},
 		referent_account_approval: {
-			type: Boolean,
-			default: false
+			type: String,
+			default: 'on hold',
+			enum: [ 'on hold', 'approved', 'declined' ]
 		}
 	},
 	{ timestamps: true }
