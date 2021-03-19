@@ -44,6 +44,10 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: [ true, 'Address is required' ]
 		},
+		reference_zone: {
+			type: String
+			// enum: [ 'zone1', 'zone2', 'zone3', 'zone4', 'zone5', 'zone6', 'zone7' ]
+		},
 		referent_account_approval: {
 			type: String,
 			default: 'on hold',
