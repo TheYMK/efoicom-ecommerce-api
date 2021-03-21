@@ -68,10 +68,10 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 			admin
 				.auth()
 				.getUserByEmail(email)
-				.then((userdata) => {
+				.then((userData) => {
 					admin
 						.auth()
-						.deleteUser(userdata.uid)
+						.deleteUser(userData.uid)
 						.then(async () => {
 							await User.findOneAndRemove({ email }).exec();
 						})
@@ -112,6 +112,45 @@ exports.getAllReferents = async (req, res) => {
 		console.log(`====> Failed to get all approved referents: {Error: ${err}}`);
 		res.status(400).json({
 			error: 'Failed to get all approved referents'
+		});
+	}
+};
+
+//
+
+exports.deleteReferentUser = async (req, res) => {
+	try {
+		const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
+
+		admin
+			.auth()
+			.getUserByEmail(deletedUser.email)
+			.then((userData) => {
+				admin
+					.auth()
+					.deleteUser(userData.uid)
+					.then(async () => {
+						console.log('===> User deleted from firebase');
+					})
+					.catch((err) => {
+						console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
+						res.status(400).json({
+							error: 'Failed to delete a user from firebase'
+						});
+					});
+			})
+			.catch((err) => {
+				console.log(`===> Failed to get user by email (firebase): {Error: ${err}}`);
+				res.status(400).json({
+					error: 'Failed to get user by email (firebase)'
+				});
+			});
+
+		res.json(deletedUser);
+	} catch (err) {
+		console.log(`====> Failed to delete a referent user account from DB and/or firebase: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to delete a referent user account from DB and/or firebase'
 		});
 	}
 };
