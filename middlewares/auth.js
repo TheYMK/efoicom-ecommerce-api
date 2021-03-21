@@ -18,7 +18,7 @@ exports.authCheck = async (req, res, next) => {
 exports.adminCheck = async (req, res, next) => {
 	const { email } = req.user;
 
-	const adminUser = await await User.findOne({ email: email });
+	const adminUser = await User.findOne({ email: email });
 
 	if (adminUser.role !== 'sysadmin') {
 		res.status(403).json({
@@ -32,7 +32,7 @@ exports.adminCheck = async (req, res, next) => {
 exports.referentCheck = async (req, res, next) => {
 	const { email } = req.user;
 
-	const referentUser = await await User.findOne({ email: email });
+	const referentUser = await User.findOne({ email: email });
 
 	if (referentUser.role !== 'referent') {
 		res.status(403).json({
@@ -43,10 +43,11 @@ exports.referentCheck = async (req, res, next) => {
 	}
 };
 
+// might be suse
 exports.customerCheck = async (req, res, next) => {
 	const { email } = req.user;
 
-	const customerUser = await await User.findOne({ email: email });
+	const customerUser = await User.findOne({ email: email });
 
 	if (customerUser.role !== 'customer') {
 		res.status(403).json({

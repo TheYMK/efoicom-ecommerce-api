@@ -1,6 +1,11 @@
 const User = require('../models/user');
 const admin = require('firebase-admin');
 
+/**
+ * Get total count of referents and customers account
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.getCounts = async (req, res) => {
 	try {
 		const totalRefCount = await User.find({ role: 'referent' }).countDocuments();
@@ -20,28 +25,43 @@ exports.getCounts = async (req, res) => {
 	}
 };
 
+/**
+ * Get all referents requests
+ * This functions checks for the total number of referents account with account approval status on hold
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.getTotalRefRequests = async (req, res) => {
 	try {
 		const requests = await User.find({ $and: [ { referent_account_approval: 'on hold' }, { role: 'referent' } ] });
 
 		res.json(requests);
 	} catch (err) {
-		console.log(`====> Failed to get referent requests: {Error: ${err}}`);
+		console.log(`====> Failed to get referents request: {Error: ${err}}`);
 		res.status(400).json({
-			error: 'Failed to get referent requests'
+			error: 'Failed to get referents request'
 		});
 	}
 };
 
+/**
+ * Check if approval status that was passed from the front end is equal to approved. If yes we go ahead and update the status in the database
+ * If approval status that was passed from the front end is equal to rejected. If yest we first try to delete the user account from firebase, then try to delete the user in the database also.
+ * @param {*} req 
+ * @param {*} res 
+ */
 exports.updateReferentAccountApprovalStatus = async (req, res) => {
 	const { email, approval_status } = req.body;
+
 	try {
-		// 1. update request status
-		const updatedUser = await User.findOneAndUpdate(
-			{ email },
-			{ referent_account_approval: approval_status },
-			{ new: true }
-		).exec();
+		// 1. if user is approved, update the status
+		if (approval_status === 'approved') {
+			await User.findOneAndUpdate(
+				{ email },
+				{ referent_account_approval: approval_status },
+				{ new: true }
+			).exec();
+		}
 
 		// 2. if the user is rejected, then we delete the account in firebase
 		if (approval_status === 'rejected') {
@@ -53,12 +73,12 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 						.auth()
 						.deleteUser(userdata.uid)
 						.then(async () => {
-							const deletedUser = await User.findOneAndRemove({ email }).exec();
+							await User.findOneAndRemove({ email }).exec();
 						})
 						.catch((err) => {
-							console.log(`====> Failed to delete a user from firebase: {Error: ${err}}`);
+							console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
 							res.status(400).json({
-								error: 'Failed to delete a user from firebase'
+								error: 'Failed to delete a user from firebase and/or DB'
 							});
 						});
 				})
@@ -75,6 +95,23 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 		console.log(`====> Failed to update referent account request status: {Error: ${err}} `);
 		res.status(400).json({
 			error: 'Failed to update referent account request status'
+		});
+	}
+};
+
+/**
+ * Get all approved referents accounts
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.getAllReferents = async (req, res) => {
+	try {
+		const requests = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] });
+		res.json(requests);
+	} catch (err) {
+		console.log(`====> Failed to get all approved referents: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to get all approved referents'
 		});
 	}
 };

@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema(
 		referent_account_approval: {
 			type: String,
 			default: 'on hold',
-			enum: [ 'on hold', 'approved', 'declined' ]
+			enum: [ 'on hold', 'approved', 'rejected' ]
 		}
 	},
 	{ timestamps: true }

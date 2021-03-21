@@ -7,6 +7,7 @@ exports.createOrUpdateUser = async (req, res) => {
 		const user = await User.findOne({ email: email });
 
 		if (user) {
+			console.log(`====> Found a user (/api/create-or-update-user)`);
 			res.json(user);
 		} else {
 			const newUser = await new User({
@@ -20,7 +21,7 @@ exports.createOrUpdateUser = async (req, res) => {
 				reference_zone: reference_zone,
 				picture
 			}).save();
-			console.log('====> New User', newUser);
+			console.log('====> Created a new user (/api/create-or-update-user)', newUser);
 			res.json(newUser);
 		}
 	} catch (err) {
