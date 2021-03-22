@@ -61,6 +61,8 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 				{ referent_account_approval: approval_status },
 				{ new: true }
 			).exec();
+
+			return res.json({ success: true });
 		}
 
 		// 2. if the user is rejected, then we delete the account in firebase
@@ -74,6 +76,7 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 						.deleteUser(userData.uid)
 						.then(async () => {
 							await User.findOneAndRemove({ email }).exec();
+							return res.json({ success: true });
 						})
 						.catch((err) => {
 							console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
@@ -89,8 +92,6 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 					});
 				});
 		}
-
-		res.json({ success: true });
 	} catch (err) {
 		console.log(`====> Failed to update referent account request status: {Error: ${err}} `);
 		res.status(400).json({
@@ -120,8 +121,6 @@ exports.getAllReferents = async (req, res) => {
 
 exports.deleteReferentUser = async (req, res) => {
 	try {
-		const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
-
 		admin
 			.auth()
 			.getUserByEmail(deletedUser.email)
@@ -131,6 +130,8 @@ exports.deleteReferentUser = async (req, res) => {
 					.deleteUser(userData.uid)
 					.then(async () => {
 						console.log('===> User deleted from firebase');
+						const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
+						return res.json(deletedUser);
 					})
 					.catch((err) => {
 						console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
@@ -145,12 +146,73 @@ exports.deleteReferentUser = async (req, res) => {
 					error: 'Failed to get user by email (firebase)'
 				});
 			});
-
-		res.json(deletedUser);
 	} catch (err) {
 		console.log(`====> Failed to delete a referent user account from DB and/or firebase: {Error: ${err}}`);
 		res.status(400).json({
 			error: 'Failed to delete a referent user account from DB and/or firebase'
+		});
+	}
+};
+
+exports.updateAdminAccount = async (req, res) => {
+	const { email } = req.user;
+	const { newName, newEmail } = req.body;
+	try {
+		admin
+			.auth()
+			.updateUser(req.user.uid, { email: newEmail })
+			.then(async (userRecord) => {
+				console.log(`====> User updated on firebase: ${userRecord}`);
+
+				const updatedUser = await User.findOneAndUpdate(
+					{ email: email },
+					{ name: newName, email: newEmail },
+					{ new: true }
+				).exec();
+
+				console.log('====> User udpated on DB');
+
+				return res.json({
+					success: true
+				});
+			})
+			.catch((err) => {
+				console.log(`===> Failed to update admin user account (firebase): {Error: ${err}}`);
+				return res.status(400).json({
+					error: 'Failed to update admin user account (firebase)'
+				});
+			});
+	} catch (err) {
+		console.log(`====> Failed to update admin user account: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to update admin user account'
+		});
+	}
+};
+
+exports.updateAdminPassword = async (req, res) => {
+	const { newPassword } = req.body;
+	try {
+		admin
+			.auth()
+			.updateUser(req.user.uid, { password: newPassword })
+			.then((userRecord) => {
+				console.log(`====> Admin password has been changed`);
+
+				return res.json({
+					success: true
+				});
+			})
+			.catch((err) => {
+				console.log(`===> Failed to update admin password (firebase): {Error: ${err}}`);
+				return res.status(400).json({
+					error: 'Failed to update admin password (firebase)'
+				});
+			});
+	} catch (err) {
+		console.log(`====> Failed to update admin password: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to update admin password'
 		});
 	}
 };

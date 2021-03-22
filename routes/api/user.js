@@ -9,7 +9,9 @@ const {
 	getTotalRefRequests,
 	updateReferentAccountApprovalStatus,
 	getAllReferents,
-	deleteReferentUser
+	deleteReferentUser,
+	updateAdminAccount,
+	updateAdminPassword
 } = require('../../controllers/user');
 
 router.get('/admin/get-counts', authCheck, adminCheck, getCounts);
@@ -22,4 +24,7 @@ router.put(
 );
 router.get('/admin/referents/all-approved', authCheck, adminCheck, getAllReferents);
 router.delete('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
+router.put('/admin/account-update', authCheck, adminCheck, updateAdminAccount);
+router.put('/admin/password-update', authCheck, adminCheck, updateAdminPassword);
+
 module.exports = router;
