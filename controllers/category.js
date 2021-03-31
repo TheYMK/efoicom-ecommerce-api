@@ -1,5 +1,6 @@
 const Category = require('../models/category');
 const slugify = require('slugify');
+const Sub = require('../models/sub');
 
 /**
  * Create a new category
@@ -66,4 +67,17 @@ exports.updateCategory = async (req, res) => {
 			error: 'Failed to update category'
 		});
 	}
+};
+
+exports.getCategorySubs = async (req, res) => {
+	Sub.find({ parent: req.params.id }).exec((err, subs) => {
+		if (err) {
+			console.log(`====> Failed to get category subs: {Error: ${err}} `);
+			res.status(400).json({
+				error: 'Failed to get category subs'
+			});
+		}
+
+		res.json(subs);
+	});
 };
