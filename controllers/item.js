@@ -122,3 +122,49 @@ exports.removeItem = async (req, res) => {
 		});
 	}
 };
+
+exports.getTotalItemsRequests = async (req, res) => {
+	try {
+		const itemsRequests = await Item.find({
+			item_approval_status: 'on hold'
+		})
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		res.json(itemsRequests);
+	} catch (err) {
+		console.log(`====> Failed to get items request: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to get items request'
+		});
+	}
+};
+
+exports.updateItemApprovalStatus = async (req, res) => {
+	try {
+		const { item_approval_status } = req.body;
+
+		//1. if approved, find the item using the slug parameter and updated its status
+		if (item_approval_status === 'approved') {
+			const updatedItem = await Item.findOneAndUpdate(
+				{ slug: req.params.slug },
+				{ item_approval_status: item_approval_status },
+				{ new: true }
+			).exec();
+
+			return res.json({ success: true });
+		}
+
+		if (item_approval_status === 'rejected') {
+			const removedItem = await Item.findOneAndRemove({ slug: req.params.slug });
+
+			return res.json({ success: true });
+		}
+	} catch (err) {
+		console.log(`====> Failed to updated item approval status: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to updated item approval status'
+		});
+	}
+};
