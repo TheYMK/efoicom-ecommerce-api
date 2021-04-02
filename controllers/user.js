@@ -129,10 +129,11 @@ exports.getAllReferents = async (req, res) => {
 //
 
 exports.deleteReferentUser = async (req, res) => {
+	const { referent_email } = req.body;
 	try {
 		admin
 			.auth()
-			.getUserByEmail(deletedUser.email)
+			.getUserByEmail(referent_email)
 			.then((userData) => {
 				admin
 					.auth()
@@ -140,12 +141,18 @@ exports.deleteReferentUser = async (req, res) => {
 					.then(async () => {
 						console.log('===> User deleted from firebase');
 						const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
+
+						// Delete all items from this user
+						await Item.deleteMany({ referent_email: referent_email }).exec();
+
 						return res.json(deletedUser);
 					})
 					.catch((err) => {
-						console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
+						console.log(
+							`====> Failed to delete a user from firebase and/or DB and/or Items linked to this user: {Error: ${err}}`
+						);
 						res.status(400).json({
-							error: 'Failed to delete a user from firebase'
+							error: 'Failed to delete a user from firebase and/or DB and/or Items linked to this user'
 						});
 					});
 			})

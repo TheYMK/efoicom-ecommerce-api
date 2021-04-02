@@ -23,7 +23,7 @@ router.put(
 	updateReferentAccountApprovalStatus
 );
 router.get('/admin/referents/all-approved', authCheck, adminCheck, getAllReferents);
-router.delete('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
+router.put('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
 router.put('/admin/account-update', authCheck, adminCheck, updateAdminAccount);
 router.put('/admin/password-update', authCheck, adminCheck, updateAdminPassword);
 
