@@ -8,9 +8,13 @@ const Sub = require('../models/sub');
  * @param {*} res 
  */
 exports.create = async (req, res) => {
-	const { category_name } = req.body;
+	const { category_name, category_images } = req.body;
 	try {
-		const newCategory = await new Category({ name: category_name, slug: slugify(category_name) }).save();
+		const newCategory = await new Category({
+			name: category_name,
+			slug: slugify(category_name),
+			images: category_images
+		}).save();
 
 		res.json(newCategory);
 	} catch (err) {
@@ -51,12 +55,12 @@ exports.removeCategory = async (req, res) => {
 };
 
 exports.updateCategory = async (req, res) => {
-	const { name } = req.body;
+	const { name, images } = req.body;
 
 	try {
 		const updated = await Category.findOneAndUpdate(
 			{ slug: req.params.slug },
-			{ name: name, slug: slugify(name) },
+			{ name: name, slug: slugify(name), images: images },
 			{ new: true }
 		);
 
