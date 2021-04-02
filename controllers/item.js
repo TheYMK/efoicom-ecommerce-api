@@ -16,7 +16,7 @@ exports.createItem = async (req, res) => {
 	}
 };
 
-exports.getItemsCounts = async (req, res) => {
+exports.getItemsCountsForReferent = async (req, res) => {
 	try {
 		const totalOnHoldItems = await Item.find({
 			$and: [ { referent_email: req.user.email }, { item_approval_status: 'on hold' } ]
@@ -43,7 +43,38 @@ exports.getItemsCounts = async (req, res) => {
 	}
 };
 
-exports.getAllItems = async (req, res) => {
+// For general use
+exports.getItemsCountsByReferent = async (req, res) => {
+	try {
+		const totalApprovedProducts = await Item.find({
+			$and: [
+				{ referent_email: req.body.referent_email },
+				{ item_approval_status: 'approved' },
+				{ item_type: 'product' }
+			]
+		}).countDocuments();
+
+		const totalApprovedServices = await Item.find({
+			$and: [
+				{ referent_email: req.body.referent_email },
+				{ item_approval_status: 'approved' },
+				{ item_type: 'service' }
+			]
+		}).countDocuments();
+
+		res.json({
+			totalApprovedProducts,
+			totalApprovedServices
+		});
+	} catch (err) {
+		console.log(`====> Failed to get items counts: {Error: ${err}} `);
+		res.status(400).json({
+			error: 'Failed to get items counts'
+		});
+	}
+};
+
+exports.getAllItemsForReferent = async (req, res) => {
 	let productslimit = req.body.productslimit ? parseInt(req.body.productslimit) : 10;
 	let productskip = req.body.productskip ? parseInt(req.body.productskip) : 0;
 
@@ -71,6 +102,34 @@ exports.getAllItems = async (req, res) => {
 			products_size: allApprovedProducts.length,
 			allApprovedServices,
 			services_size: allApprovedServices.length
+		});
+	} catch (err) {
+		console.log(`====> Failed to get all items for referent: {Error: ${err}} `);
+		res.status(400).json({
+			error: 'Failed to get all items for referent'
+		});
+	}
+};
+
+exports.getAllItems = async (req, res) => {
+	try {
+		const allApprovedProducts = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'product' } ]
+		})
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		const allApprovedServices = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'service' } ]
+		})
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		res.json({
+			allApprovedProducts,
+			allApprovedServices
 		});
 	} catch (err) {
 		console.log(`====> Failed to get all items: {Error: ${err}} `);

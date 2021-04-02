@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Item = require('../models/item');
 const admin = require('firebase-admin');
 
 /**
@@ -10,10 +11,18 @@ exports.getCounts = async (req, res) => {
 	try {
 		const totalRefCount = await User.find({ role: 'referent' }).countDocuments();
 		const totalCustomerCount = await User.find({ role: 'customer' }).countDocuments();
+		const totalProductsCount = await Item.find({
+			$and: [ { item_type: 'product' }, { item_approval_status: 'approved' } ]
+		}).countDocuments();
+		const totalServicesCount = await Item.find({
+			$and: [ { item_type: 'service' }, { item_approval_status: 'approved' } ]
+		}).countDocuments();
 
 		const counts = {
 			totalRefCount,
-			totalCustomerCount
+			totalCustomerCount,
+			totalProductsCount,
+			totalServicesCount
 		};
 
 		res.json(counts);

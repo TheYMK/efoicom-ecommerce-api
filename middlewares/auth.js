@@ -29,6 +29,20 @@ exports.adminCheck = async (req, res, next) => {
 	}
 };
 
+exports.adminAndReferentCheck = async (req, res, next) => {
+	const { email } = req.user;
+
+	const user = await User.findOne({ email: email });
+
+	if (user.role === 'sysadmin' || user.role === 'referent') {
+		next();
+	} else {
+		res.status(403).json({
+			err: 'Access denied'
+		});
+	}
+};
+
 exports.referentCheck = async (req, res, next) => {
 	const { email } = req.user;
 

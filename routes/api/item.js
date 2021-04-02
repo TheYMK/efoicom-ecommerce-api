@@ -2,27 +2,30 @@ const express = require('express');
 const router = express.Router();
 
 // middlewares
-const { authCheck, referentCheck, adminCheck } = require('../../middlewares/auth');
+const { authCheck, referentCheck, adminCheck, adminAndReferentCheck } = require('../../middlewares/auth');
 
 // controllers
 const {
 	createItem,
-	getItemsCounts,
+	getItemsCountsForReferent,
+	getAllItemsForReferent,
 	getAllItems,
 	getSingleItem,
 	updateItem,
 	removeItem,
 	getTotalItemsRequests,
-	updateItemApprovalStatus
+	updateItemApprovalStatus,
+	getItemsCountsByReferent
 } = require('../../controllers/item');
 
 router.post('/referent/item/create', authCheck, referentCheck, createItem);
-router.get('/referent/items/get-counts', authCheck, referentCheck, getItemsCounts);
-router.post('/referent/items/get-all', authCheck, referentCheck, getAllItems);
+router.get('/referent/items/get-counts', authCheck, referentCheck, getItemsCountsForReferent);
+router.post('/referent/items/get-all', authCheck, referentCheck, getAllItemsForReferent);
 router.get('/item/:slug', getSingleItem);
-router.put('/referent/item/:slug', authCheck, referentCheck, updateItem);
-router.delete('/referent/item/:slug', authCheck, referentCheck, removeItem);
+router.put('/item/:slug', authCheck, adminAndReferentCheck, updateItem);
+router.delete('/item/:slug', authCheck, adminAndReferentCheck, removeItem);
 router.get('/admin/items/requests', authCheck, adminCheck, getTotalItemsRequests);
 router.put('/admin/item/:slug/update-item-approval-status', authCheck, adminCheck, updateItemApprovalStatus);
-
+router.get('/items/get-all', getAllItems);
+router.post('/items/get-counts-by-referents', getItemsCountsByReferent);
 module.exports = router;
