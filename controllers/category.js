@@ -45,6 +45,9 @@ exports.listCategories = async (req, res) => {
 exports.removeCategory = async (req, res) => {
 	try {
 		const removedCategory = await Category.findOneAndRemove({ slug: req.params.slug }).exec();
+		const removedSubs = await Sub.deleteMany({ parent: removedCategory._id }).exec();
+		console.log(`All subs related to ${removedCategory.name} have been deleted`);
+
 		res.json(removedCategory);
 	} catch (err) {
 		console.log(`====> Failed to remove category: {Error: ${err}} `);
