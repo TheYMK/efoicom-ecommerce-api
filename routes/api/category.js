@@ -5,14 +5,14 @@ const router = express.Router();
 const { authCheck, adminCheck } = require('../../middlewares/auth');
 // controllers
 const {
-	create,
+	createCategory,
 	listCategories,
 	removeCategory,
 	updateCategory,
 	getCategorySubs
 } = require('../../controllers/category');
 
-router.post('/admin/category/create', authCheck, adminCheck, create);
+router.post('/admin/category/create', authCheck, adminCheck, createCategory);
 router.get('/categories', listCategories);
 router.delete('/admin/category/delete/:slug', authCheck, adminCheck, removeCategory);
 router.put('/admin/category/update/:slug', authCheck, adminCheck, updateCategory);

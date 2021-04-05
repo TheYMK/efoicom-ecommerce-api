@@ -3,11 +3,13 @@ const slugify = require('slugify');
 const Sub = require('../models/sub');
 
 /**
- * Create a new category
+ * This function creates a new category
  * @param {*} req 
- * @param {*} res 
+ * @param {*} res
+ * @returns a new category object
+ * @reviewed YES
  */
-exports.create = async (req, res) => {
+exports.createCategory = async (req, res) => {
 	const { category_name, category_images } = req.body;
 	try {
 		const newCategory = await new Category({
@@ -26,9 +28,11 @@ exports.create = async (req, res) => {
 };
 
 /**
- * Fetch all categories
+ * This function fetches all categories
  * @param {*} req 
- * @param {*} res 
+ * @param {*} res
+ * @returns an array of categorie objects
+ * @reviewed YES
  */
 exports.listCategories = async (req, res) => {
 	try {
@@ -42,6 +46,13 @@ exports.listCategories = async (req, res) => {
 	}
 };
 
+/**
+ * This function removes one category and subs related to that category
+ * @param {*} req 
+ * @param {*} res
+ * @returns the removed category object
+ * @reviewed YES
+ */
 exports.removeCategory = async (req, res) => {
 	try {
 		const removedCategory = await Category.findOneAndRemove({ slug: req.params.slug }).exec();
@@ -57,6 +68,13 @@ exports.removeCategory = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates one category
+ * @param {*} req 
+ * @param {*} res
+ * @returns the updated category object
+ * @reviewed YES
+ */
 exports.updateCategory = async (req, res) => {
 	const { name, images } = req.body;
 
@@ -76,6 +94,13 @@ exports.updateCategory = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches all category subs
+ * @param {*} req 
+ * @param {*} res
+ * @returns an array of subs
+ * @reviewed YES
+ */
 exports.getCategorySubs = async (req, res) => {
 	Sub.find({ parent: req.params.id }).exec((err, subs) => {
 		if (err) {

@@ -2,6 +2,13 @@ const Item = require('../models/item');
 const slugify = require('slugify');
 const User = require('../models/user');
 
+/**
+ * This function creates an item
+ * @param {*} req 
+ * @param {*} res
+ * @returns a new item object
+ * @reviewed YES
+ */
 exports.createItem = async (req, res) => {
 	try {
 		req.body.slug = slugify(req.body.title);
@@ -16,6 +23,13 @@ exports.createItem = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches the total count of on hold items, approved products and approved services
+ * @param {*} req 
+ * @param {*} res
+ * @returns a json object with document counts
+ * @reviewed YES
+ */
 exports.getItemsCountsForReferent = async (req, res) => {
 	try {
 		const totalOnHoldItems = await Item.find({
@@ -43,7 +57,13 @@ exports.getItemsCountsForReferent = async (req, res) => {
 	}
 };
 
-// For general use
+/**
+ * This function fetches the total count of approved products and approved services that belongs to a particular referent
+ * @param {*} req 
+ * @param {*} res
+ * @returns a json object with document counts
+ * @reviewed YES
+ */
 exports.getItemsCountsByReferent = async (req, res) => {
 	try {
 		const totalApprovedProducts = await Item.find({
@@ -74,6 +94,13 @@ exports.getItemsCountsByReferent = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches all items that belong to the logged in referent user
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object containing an array of approved items and their array sizes
+ * @reviewed YES
+ */
 exports.getAllItemsForReferent = async (req, res) => {
 	let productslimit = req.body.productslimit ? parseInt(req.body.productslimit) : 10;
 	let productskip = req.body.productskip ? parseInt(req.body.productskip) : 0;
@@ -111,6 +138,13 @@ exports.getAllItemsForReferent = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches all approved items
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object containing an array of approved items
+ * @reviewed YES
+ */
 exports.getAllItems = async (req, res) => {
 	try {
 		const allApprovedProducts = await Item.find({
@@ -139,6 +173,13 @@ exports.getAllItems = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches a single item
+ * @param {*} req 
+ * @param {*} res
+ * @returns an item object
+ * @reviewed YES
+ */
 exports.getSingleItem = async (req, res) => {
 	try {
 		const item = await Item.findOne({ slug: req.params.slug }).populate('category').populate('subs').exec();
@@ -152,6 +193,13 @@ exports.getSingleItem = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates a single item
+ * @param {*} req 
+ * @param {*} res
+ * @returns the updated item object
+ * @reviewed YES
+ */
 exports.updateItem = async (req, res) => {
 	try {
 		if (req.body.title) {
@@ -169,6 +217,13 @@ exports.updateItem = async (req, res) => {
 	}
 };
 
+/**
+ * This function removes a single item
+ * @param {*} req 
+ * @param {*} res
+ * @returns the removed item object
+ * @reviewed YES
+ */
 exports.removeItem = async (req, res) => {
 	try {
 		const removedItem = await Item.findOneAndRemove({ slug: req.params.slug });
@@ -182,6 +237,13 @@ exports.removeItem = async (req, res) => {
 	}
 };
 
+/**
+ * This function total item with approval status set to on hold
+ * @param {*} req 
+ * @param {*} res
+ * @returns an array of item objects
+ * @reviewed YES
+ */
 exports.getTotalItemsRequests = async (req, res) => {
 	try {
 		const itemsRequests = await Item.find({
@@ -200,6 +262,15 @@ exports.getTotalItemsRequests = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates an item approval status.
+ * If the approval status passed on the request body is equal to 'approved' the item will be updated.
+ * If the approval status passed on the request body is equal to 'rejected' the item will be removed.
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object
+ * @reviewed YES
+ */
 exports.updateItemApprovalStatus = async (req, res) => {
 	try {
 		const { item_approval_status } = req.body;

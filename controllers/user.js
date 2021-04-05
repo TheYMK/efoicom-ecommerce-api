@@ -3,9 +3,12 @@ const Item = require('../models/item');
 const admin = require('firebase-admin');
 
 /**
- * Get total count of referents and customers account
+ * This account fetches the total count of referent and customer accounts and total count of approved products and services.
+ * 
  * @param {*} req 
  * @param {*} res 
+ * @returns an object with total counts of referent, customer, products and services
+ * @reviewed YES
  */
 exports.getCounts = async (req, res) => {
 	try {
@@ -27,18 +30,20 @@ exports.getCounts = async (req, res) => {
 
 		res.json(counts);
 	} catch (err) {
-		console.log(`====> Failed to get the total count of referent accounts: {Error: ${err}}`);
+		console.log(`====> Failed to get the total count of items: {Error: ${err}}`);
 		res.status(400).json({
-			error: 'Failed to get the total count of referent accounts'
+			error: 'Failed to get the total count of items'
 		});
 	}
 };
 
 /**
- * Get all referents requests
+ * 
  * This functions checks for the total number of referents account with account approval status on hold
  * @param {*} req 
  * @param {*} res 
+ * @returns an array of referent accounts with account approval status of on hold
+ * @reviewed YES
  */
 exports.getTotalRefRequests = async (req, res) => {
 	try {
@@ -54,19 +59,21 @@ exports.getTotalRefRequests = async (req, res) => {
 };
 
 /**
- * Check if approval status that was passed from the front end is equal to approved. If yes we go ahead and update the status in the database
+ * This function checks if approval status that was passed from the front end is equal to approved. If yes we go ahead and update the status in the database
  * If approval status that was passed from the front end is equal to rejected. If yest we first try to delete the user account from firebase, then try to delete the user in the database also.
  * @param {*} req 
  * @param {*} res 
+ * @returns a boolean
+ * @reviewed YES
  */
 exports.updateReferentAccountApprovalStatus = async (req, res) => {
-	const { email, approval_status } = req.body;
+	const { referent_email, approval_status } = req.body;
 
 	try {
 		// 1. if user is approved, update the status
 		if (approval_status === 'approved') {
 			await User.findOneAndUpdate(
-				{ email },
+				{ referent_email },
 				{ referent_account_approval: approval_status },
 				{ new: true }
 			).exec();
@@ -74,32 +81,14 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 			return res.json({ success: true });
 		}
 
-		// 2. if the user is rejected, then we delete the account in firebase
+		// 2. if the user is rejected, then we delete the account in firebase and DB
 		if (approval_status === 'rejected') {
-			admin
-				.auth()
-				.getUserByEmail(email)
-				.then((userData) => {
-					admin
-						.auth()
-						.deleteUser(userData.uid)
-						.then(async () => {
-							await User.findOneAndRemove({ email }).exec();
-							return res.json({ success: true });
-						})
-						.catch((err) => {
-							console.log(`====> Failed to delete a user from firebase and/or DB: {Error: ${err}}`);
-							res.status(400).json({
-								error: 'Failed to delete a user from firebase and/or DB'
-							});
-						});
-				})
-				.catch((err) => {
-					console.log(`===> Failed to get user by email (firebase): {Error: ${err}}`);
-					res.status(400).json({
-						error: 'Failed to get user by email (firebase)'
-					});
+			admin.auth().getUserByEmail(referent_email).then((userData) => {
+				admin.auth().deleteUser(userData.uid).then(async () => {
+					await User.findOneAndRemove({ referent_email }).exec();
+					return res.json({ success: true });
 				});
+			});
 		}
 	} catch (err) {
 		console.log(`====> Failed to update referent account request status: {Error: ${err}} `);
@@ -110,7 +99,7 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 };
 
 /**
- * Get all approved referents accounts
+ * This function fetches all approved referent accounts
  * @param {*} req 
  * @param {*} res 
  */
@@ -126,42 +115,28 @@ exports.getAllReferents = async (req, res) => {
 	}
 };
 
-//
-
+/**
+ * This function deletes a referent user
+ * @param {*} req 
+ * @param {*} res 
+ * @returns the delete user object
+ * @reviewed YES
+ */
 exports.deleteReferentUser = async (req, res) => {
 	const { referent_email } = req.body;
 	try {
-		admin
-			.auth()
-			.getUserByEmail(referent_email)
-			.then((userData) => {
-				admin
-					.auth()
-					.deleteUser(userData.uid)
-					.then(async () => {
-						console.log('===> User deleted from firebase');
-						const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
+		admin.auth().getUserByEmail(referent_email).then((userData) => {
+			admin.auth().deleteUser(userData.uid).then(async () => {
+				console.log('===> User deleted from firebase');
+				const deletedUser = await User.findByIdAndRemove(req.params.id).exec();
 
-						// Delete all items from this user
-						await Item.deleteMany({ referent_email: referent_email }).exec();
+				// Delete all items from this user
+				await Item.deleteMany({ referent_email: referent_email }).exec();
+				console.log('===> User posted items deleted from firebase');
 
-						return res.json(deletedUser);
-					})
-					.catch((err) => {
-						console.log(
-							`====> Failed to delete a user from firebase and/or DB and/or Items linked to this user: {Error: ${err}}`
-						);
-						res.status(400).json({
-							error: 'Failed to delete a user from firebase and/or DB and/or Items linked to this user'
-						});
-					});
-			})
-			.catch((err) => {
-				console.log(`===> Failed to get user by email (firebase): {Error: ${err}}`);
-				res.status(400).json({
-					error: 'Failed to get user by email (firebase)'
-				});
+				return res.json(deletedUser);
 			});
+		});
 	} catch (err) {
 		console.log(`====> Failed to delete a referent user account from DB and/or firebase: {Error: ${err}}`);
 		res.status(400).json({
@@ -170,34 +145,32 @@ exports.deleteReferentUser = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates the user email in firebase, and then updates the name and email in DB
+ * @param {*} req 
+ * @param {*} res 
+ * @returns a boolean
+ * @reviewed YES
+ */
 exports.updateAdminAccount = async (req, res) => {
 	const { email } = req.user;
 	const { newName, newEmail } = req.body;
 	try {
-		admin
-			.auth()
-			.updateUser(req.user.uid, { email: newEmail })
-			.then(async (userRecord) => {
-				console.log(`====> User updated on firebase: ${userRecord}`);
+		admin.auth().updateUser(req.user.uid, { email: newEmail }).then(async (userRecord) => {
+			console.log(`====> User updated on firebase: ${userRecord}`);
 
-				const updatedUser = await User.findOneAndUpdate(
-					{ email: email },
-					{ name: newName, email: newEmail },
-					{ new: true }
-				).exec();
+			const updatedUser = await User.findOneAndUpdate(
+				{ email: email },
+				{ name: newName, email: newEmail },
+				{ new: true }
+			).exec();
 
-				console.log('====> User udpated on DB');
+			console.log('====> User udpated on DB');
 
-				return res.json({
-					success: true
-				});
-			})
-			.catch((err) => {
-				console.log(`===> Failed to update admin user account (firebase): {Error: ${err}}`);
-				return res.status(400).json({
-					error: 'Failed to update admin user account (firebase)'
-				});
+			return res.json({
+				success: true
 			});
+		});
 	} catch (err) {
 		console.log(`====> Failed to update admin user account: {Error: ${err}}`);
 		return res.status(400).json({
@@ -206,25 +179,23 @@ exports.updateAdminAccount = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates the user password in firebase
+ * @param {*} req 
+ * @param {*} res 
+ * @returns a boolean
+ * @reviewed YES
+ */
 exports.updateAdminPassword = async (req, res) => {
 	const { newPassword } = req.body;
 	try {
-		admin
-			.auth()
-			.updateUser(req.user.uid, { password: newPassword })
-			.then((userRecord) => {
-				console.log(`====> Admin password has been changed`);
+		admin.auth().updateUser(req.user.uid, { password: newPassword }).then((userRecord) => {
+			console.log(`====> Admin password has been changed`);
 
-				return res.json({
-					success: true
-				});
-			})
-			.catch((err) => {
-				console.log(`===> Failed to update admin password (firebase): {Error: ${err}}`);
-				return res.status(400).json({
-					error: 'Failed to update admin password (firebase)'
-				});
+			return res.json({
+				success: true
 			});
+		});
 	} catch (err) {
 		console.log(`====> Failed to update admin password: {Error: ${err}}`);
 		return res.status(400).json({

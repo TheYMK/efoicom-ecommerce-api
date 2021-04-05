@@ -14,7 +14,7 @@ const {
 	updateAdminPassword
 } = require('../../controllers/user');
 
-router.get('/admin/get-counts', authCheck, adminCheck, getCounts);
+router.get('/get-counts', getCounts);
 router.get('/admin/referents/requests', authCheck, adminCheck, getTotalRefRequests);
 router.put(
 	'/admin/referent/update-account-approval-status',
@@ -22,7 +22,7 @@ router.put(
 	adminCheck,
 	updateReferentAccountApprovalStatus
 );
-router.get('/admin/referents/all-approved', authCheck, adminCheck, getAllReferents);
+router.get('/referents/all-approved', getAllReferents);
 router.put('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
 router.put('/admin/account-update', authCheck, adminCheck, updateAdminAccount);
 router.put('/admin/password-update', authCheck, adminCheck, updateAdminPassword);

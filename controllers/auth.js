@@ -1,5 +1,14 @@
 const User = require('../models/user');
 
+/**
+ * This function checks if a user with the email passed to the body already exists in the DB or not.
+ * If yes, it returns the user found.
+ * If no, it creates a new user with the information passed to the body.
+ * @param {*} req 
+ * @param {*} res 
+ * @returns user object
+ * @reviewed YES
+ */
 exports.createOrUpdateUser = async (req, res) => {
 	const { email, picture } = req.user;
 	const { first_name, last_name, phone_number, account_type, city, island, address, reference_zone } = req.body;
@@ -32,6 +41,13 @@ exports.createOrUpdateUser = async (req, res) => {
 	}
 };
 
+/**
+ * This function find a user using the logged in user's email and returns the user
+ * @param {*} req 
+ * @param {*} res 
+ * @returns user object
+ * @reviewed YES
+ */
 exports.currentUser = async (req, res) => {
 	const { email } = req.user;
 

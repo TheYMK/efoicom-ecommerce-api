@@ -1,6 +1,13 @@
 const Sub = require('../models/sub');
 const slugify = require('slugify');
 
+/**
+ * This function creates a new sub-category
+ * @param {*} req 
+ * @param {*} res
+ * @returns a new sub object
+ * @reviewed YES
+ */
 exports.create = async (req, res) => {
 	const { name, parent } = req.body;
 
@@ -16,6 +23,13 @@ exports.create = async (req, res) => {
 	}
 };
 
+/**
+ * This function fetches all sub-categories
+ * @param {*} req 
+ * @param {*} res
+ * @returns an array of sub objects
+ * @reviewed YES
+ */
 exports.listSubs = async (req, res) => {
 	try {
 		const allSubs = await Sub.find({}).sort({ createdAt: -1 });
@@ -29,6 +43,13 @@ exports.listSubs = async (req, res) => {
 	}
 };
 
+/**
+ * This function removes a sub-category
+ * @param {*} req 
+ * @param {*} res
+ * @returns the removed sub object
+ * @reviewed YES
+ */
 exports.removeSub = async (req, res) => {
 	try {
 		const removedSub = await Sub.findOneAndRemove({ slug: req.params.slug });
@@ -42,6 +63,13 @@ exports.removeSub = async (req, res) => {
 	}
 };
 
+/**
+ * This function updates a sub-category
+ * @param {*} req 
+ * @param {*} res
+ * @returns the updated sub object
+ * @reviewed YES
+ */
 exports.updateSub = async (req, res) => {
 	const { name, parent } = req.body;
 
