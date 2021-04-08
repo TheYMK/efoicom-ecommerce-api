@@ -76,6 +76,10 @@ const itemSchema = new mongoose.Schema(
 			type: String,
 			enum: [ 'product', 'service' ],
 			required: true
+		},
+		isRecommended: {
+			type: Boolean,
+			default: false
 		}
 	},
 	{ timestamps: true }

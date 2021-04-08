@@ -298,3 +298,86 @@ exports.updateItemApprovalStatus = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function sets the recommendation of an item to true.
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object
+ * @reviewed NO
+ */
+exports.recommendItem = async (req, res) => {
+	try {
+		const updatedItem = await Item.findOneAndUpdate(
+			{ slug: req.params.slug },
+			{ isRecommended: true },
+			{ new: true }
+		);
+		res.json(updatedItem);
+	} catch (err) {
+		console.log(`====> Failed to updated item recommendation: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to updated item approval status'
+		});
+	}
+};
+
+/**
+ * This function sets the recommendation of an item to false.
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object
+ * @reviewed NO
+ */
+exports.notRecommendItem = async (req, res) => {
+	try {
+		const updatedItem = await Item.findOneAndUpdate(
+			{ slug: req.params.slug },
+			{ isRecommended: false },
+			{ new: true }
+		);
+		res.json(updatedItem);
+	} catch (err) {
+		console.log(`====> Failed to updated item recommendation: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to updated item approval status'
+		});
+	}
+};
+
+/**
+ * This function fetches all recommended items.
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object
+ * @reviewed NO
+ */
+exports.getAllRecommendedItems = async (req, res) => {
+	try {
+		const allRecommendedProducts = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'product' }, { isRecommended: true } ]
+		})
+			.populate('category')
+			.populate('subs')
+			.limit(4)
+			.exec();
+
+		const allRecommendedServices = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'service' }, { isRecommended: true } ]
+		})
+			.populate('category')
+			.populate('subs')
+			.limit(4)
+			.exec();
+
+		res.json({
+			allRecommendedProducts,
+			allRecommendedServices
+		});
+	} catch (err) {
+		console.log(`====> Failed to get all recommended items: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to get all recommended items'
+		});
+	}
+};

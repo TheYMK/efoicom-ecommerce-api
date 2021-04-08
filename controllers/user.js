@@ -68,12 +68,13 @@ exports.getTotalRefRequests = async (req, res) => {
  */
 exports.updateReferentAccountApprovalStatus = async (req, res) => {
 	const { referent_email, approval_status } = req.body;
-
+	console.log(referent_email);
+	console.log(approval_status);
 	try {
 		// 1. if user is approved, update the status
 		if (approval_status === 'approved') {
 			await User.findOneAndUpdate(
-				{ referent_email },
+				{ email: referent_email },
 				{ referent_account_approval: approval_status },
 				{ new: true }
 			).exec();
@@ -85,7 +86,7 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
 		if (approval_status === 'rejected') {
 			admin.auth().getUserByEmail(referent_email).then((userData) => {
 				admin.auth().deleteUser(userData.uid).then(async () => {
-					await User.findOneAndRemove({ referent_email }).exec();
+					await User.findOneAndRemove({ email: referent_email }).exec();
 					return res.json({ success: true });
 				});
 			});
