@@ -381,3 +381,29 @@ exports.getAllRecommendedItems = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function fetches all related items.
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object
+ * @reviewed NO
+ */
+exports.getRelatedItems = async (req, res) => {
+	try {
+		const item = await Item.findById(req.params.item_id).exec();
+
+		const relatedItems = await Item.find({ _id: { $ne: item._id }, category: item.category })
+			.limit(4)
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		res.json(relatedItems);
+	} catch (err) {
+		console.log(`====> Failed to get all related items: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to get all related items'
+		});
+	}
+};

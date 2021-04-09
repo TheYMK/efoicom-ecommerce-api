@@ -204,3 +204,23 @@ exports.updateAdminPassword = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function fetches a referent user
+ * @param {*} req 
+ * @param {*} res 
+ * @returns a user object
+ * @reviewed No
+ */
+exports.getSingleReferentByEmail = async (req, res) => {
+	try {
+		const foundReferent = await User.findOne({ email: req.params.email }).exec();
+
+		res.json(foundReferent);
+	} catch (err) {
+		console.log(`====> Failed to get single referent: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to get single referent'
+		});
+	}
+};

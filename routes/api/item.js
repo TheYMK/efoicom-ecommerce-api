@@ -18,7 +18,8 @@ const {
 	getItemsCountsByReferent,
 	recommendItem,
 	notRecommendItem,
-	getAllRecommendedItems
+	getAllRecommendedItems,
+	getRelatedItems
 } = require('../../controllers/item');
 
 router.post('/referent/item/create', authCheck, referentCheck, createItem);
@@ -34,4 +35,5 @@ router.post('/items/get-counts-by-referents', getItemsCountsByReferent);
 router.put('/admin/items/:slug/recommend/yes', authCheck, adminCheck, recommendItem);
 router.put('/admin/items/:slug/recommend/no', authCheck, adminCheck, notRecommendItem);
 router.get('/items/get-all/recommended', getAllRecommendedItems);
+router.get('/items/related/:item_id', getRelatedItems);
 module.exports = router;

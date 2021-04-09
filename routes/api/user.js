@@ -11,7 +11,8 @@ const {
 	getAllReferents,
 	deleteReferentUser,
 	updateAdminAccount,
-	updateAdminPassword
+	updateAdminPassword,
+	getSingleReferentByEmail
 } = require('../../controllers/user');
 
 router.get('/get-counts', getCounts);
@@ -26,5 +27,6 @@ router.get('/referents/all-approved', getAllReferents);
 router.put('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
 router.put('/admin/account-update', authCheck, adminCheck, updateAdminAccount);
 router.put('/admin/password-update', authCheck, adminCheck, updateAdminPassword);
+router.get('/referent/:email', getSingleReferentByEmail);
 
 module.exports = router;
