@@ -21,7 +21,8 @@ const {
 	getAllRecommendedItems,
 	getRelatedItems,
 	getAllProductsByCount,
-	getAllServicesByCount
+	getAllServicesByCount,
+	itemRating
 } = require('../../controllers/item');
 
 router.post('/referent/item/create', authCheck, referentCheck, createItem);
@@ -40,5 +41,6 @@ router.get('/items/get-all/recommended', getAllRecommendedItems);
 router.get('/items/related/:item_id', getRelatedItems);
 router.get('/items/products/:count', getAllProductsByCount);
 router.get('/items/services/:count', getAllServicesByCount);
+router.put('/item/star/:item_id', authCheck, itemRating);
 
 module.exports = router;

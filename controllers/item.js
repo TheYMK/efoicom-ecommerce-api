@@ -470,3 +470,47 @@ exports.getAllServicesByCount = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function updates the rating of an item
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an object
+ * @reviewed No
+ */
+exports.itemRating = async (req, res) => {
+	const { star, comment } = req.body;
+	try {
+		const item = await Item.findById(req.params.item_id).exec();
+		const user = await User.findOne({ email: req.user.email }).exec();
+		// check if currently logged in user have already added rating to this item
+		let existingRatingObject = item.ratings.find((rating) => rating.postedBy.toString() === user._id.toString());
+
+		// if user haven't left rating yet push new one
+		if (existingRatingObject === undefined) {
+			const addedRating = await Item.findByIdAndUpdate(
+				item._id,
+				{
+					$push: { ratings: { star: star, comment: comment, postedBy: user._id } }
+				},
+				{ new: true }
+			).exec();
+
+			res.json(addedRating);
+		} else {
+			// if user have already left rating, update existing one
+			const updatedRating = await Item.updateOne(
+				{ ratings: { $elemMatch: existingRatingObject } },
+				{ $set: { 'ratings.$.star': star, 'ratings.$.comment': comment } },
+				{ new: true }
+			).exec();
+
+			res.json(updatedRating);
+		}
+	} catch (err) {
+		console.log(`====> Failed to updates the rating of an item: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to updates the rating of an item'
+		});
+	}
+};
