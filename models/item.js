@@ -62,6 +62,11 @@ const itemSchema = new mongoose.Schema(
 			required: true,
 			maxlength: 2000
 		},
+		provider_island: {
+			type: String,
+			required: [ true, 'Island name is required' ],
+			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+		},
 		// availability: {
 		// 	type: String,
 		// 	required: true,

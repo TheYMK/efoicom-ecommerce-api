@@ -407,3 +407,66 @@ exports.getRelatedItems = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function fetches all approved products by count
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object containing an array of approved products
+ * @reviewed YES
+ */
+exports.getAllProductsByCount = async (req, res) => {
+	try {
+		const allApprovedProducts = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'product' } ]
+		})
+			.limit(parseInt(req.params.count))
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		// const allApprovedServices = await Item.find({
+		// 	$and: [ { item_approval_status: 'approved' }, { item_type: 'service' } ]
+		// })
+		// 	.populate('category')
+		// 	.populate('subs')
+		// 	.exec();
+
+		res.json({
+			allApprovedProducts
+		});
+	} catch (err) {
+		console.log(`====> Failed to get all products by count: {Error: ${err}} `);
+		res.status(400).json({
+			error: 'Failed to get all products by count'
+		});
+	}
+};
+
+/**
+ * This function fetches all approved services by count
+ * @param {*} req 
+ * @param {*} res
+ * @returns an object containing an array of approved services
+ * @reviewed YES
+ */
+exports.getAllServicesByCount = async (req, res) => {
+	try {
+		const allApprovedServices = await Item.find({
+			$and: [ { item_approval_status: 'approved' }, { item_type: 'service' } ]
+		})
+			.limit(parseInt(req.params.count))
+			.populate('category')
+			.populate('subs')
+			.exec();
+
+		res.json({
+			allApprovedServices
+		});
+	} catch (err) {
+		console.log(`====> Failed to get all services by count: {Error: ${err}} `);
+		res.status(400).json({
+			error: 'Failed to get all services by count'
+		});
+	}
+};

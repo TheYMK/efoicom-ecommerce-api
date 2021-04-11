@@ -19,7 +19,9 @@ const {
 	recommendItem,
 	notRecommendItem,
 	getAllRecommendedItems,
-	getRelatedItems
+	getRelatedItems,
+	getAllProductsByCount,
+	getAllServicesByCount
 } = require('../../controllers/item');
 
 router.post('/referent/item/create', authCheck, referentCheck, createItem);
@@ -36,4 +38,7 @@ router.put('/admin/items/:slug/recommend/yes', authCheck, adminCheck, recommendI
 router.put('/admin/items/:slug/recommend/no', authCheck, adminCheck, notRecommendItem);
 router.get('/items/get-all/recommended', getAllRecommendedItems);
 router.get('/items/related/:item_id', getRelatedItems);
+router.get('/items/products/:count', getAllProductsByCount);
+router.get('/items/services/:count', getAllServicesByCount);
+
 module.exports = router;
