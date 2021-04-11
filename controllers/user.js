@@ -224,3 +224,95 @@ exports.getSingleReferentByEmail = async (req, res) => {
 		});
 	}
 };
+
+/**
+ * This function adds an item to wishlist
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an object
+ * @reviewed No
+ */
+exports.addItemToWishlist = async (req, res) => {
+	try {
+		const { item_id } = req.body;
+
+		const user = await User.findOneAndUpdate(
+			{ email: req.user.email },
+			{ $addToSet: { wishlist: item_id } },
+			{ new: true }
+		).exec();
+
+		res.json({
+			success: true
+		});
+	} catch (err) {
+		console.log(`====> Failed to add item to wishlist: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to add item to wishlist'
+		});
+	}
+};
+
+/**
+ * This function fetches items on the users' wishlist
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an array of objects
+ * @reviewed No
+ */
+exports.getUserWishlist = async (req, res) => {
+	try {
+		const wishlist = await User.findOne({ email: req.user.email }).select('wishlist').populate('wishlist').exec();
+		res.json(wishlist);
+	} catch (err) {
+		console.log(`====> Failed to fetch items on the wishlist: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetch items on the wishlist'
+		});
+	}
+};
+
+/**
+ * This function removes an items from the wishlist
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an object
+ * @reviewed No
+ */
+exports.removeFromWishlist = async (req, res) => {
+	try {
+		const { id } = req.params;
+		const user = await User.findOneAndUpdate({ email: req.user.email }, { $pull: { wishlist: id } }).exec();
+
+		res.json({
+			success: true
+		});
+	} catch (err) {
+		console.log(`====> Failed to remove item from the wishlist: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to remove item from the wishlist'
+		});
+	}
+};
+
+/**
+ * This function gets the total count of items on the users' wishlist
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an object
+ * @reviewed No
+ */
+exports.getUserWishlistCount = async (req, res) => {
+	try {
+		const result = await User.findOne({ email: req.user.email }).select('wishlist').populate('wishlist').exec();
+
+		res.json({
+			count: result.wishlist.length
+		});
+	} catch (err) {
+		console.log(`====> Failed to fetch items on the wishlist: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetch items on the wishlist'
+		});
+	}
+};

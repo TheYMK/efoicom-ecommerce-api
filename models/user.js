@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema(
 		wishlist: [
 			{
 				type: ObjectId,
-				ref: 'Product'
+				ref: 'Item'
 			}
 		],
 		island: {
