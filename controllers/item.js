@@ -652,6 +652,31 @@ const handleSubQuery = async (req, res, sub) => {
 	}
 };
 
+const handleTypeQuery = async (req, res, type) => {
+	try {
+		if (type === 'all') {
+			const items = await Item.find({})
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		} else {
+			const items = await Item.find({ item_type: type })
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on item type selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on item type selection'
+		});
+	}
+};
+
 /**
  * This function fetches items based on filters
  * @param {*} req 
@@ -660,7 +685,7 @@ const handleSubQuery = async (req, res, sub) => {
  * @reviewed NO
  */
 exports.searchFilters = async (req, res) => {
-	const { query, island, category, rating, sub } = req.body;
+	const { query, island, category, rating, sub, type } = req.body;
 
 	if (query) {
 		await handleSearchQuery(req, res, query);
@@ -680,5 +705,9 @@ exports.searchFilters = async (req, res) => {
 
 	if (sub) {
 		await handleSubQuery(req, res, sub);
+	}
+
+	if (type) {
+		await handleTypeQuery(req, res, type);
 	}
 };
