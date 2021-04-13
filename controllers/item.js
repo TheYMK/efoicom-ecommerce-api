@@ -413,7 +413,7 @@ exports.getRelatedItems = async (req, res) => {
  * @param {*} req 
  * @param {*} res
  * @returns an object containing an array of approved products
- * @reviewed YES
+ * @reviewed No
  */
 exports.getAllProductsByCount = async (req, res) => {
 	try {
@@ -448,7 +448,7 @@ exports.getAllProductsByCount = async (req, res) => {
  * @param {*} req 
  * @param {*} res
  * @returns an object containing an array of approved services
- * @reviewed YES
+ * @reviewed No
  */
 exports.getAllServicesByCount = async (req, res) => {
 	try {
@@ -512,5 +512,173 @@ exports.itemRating = async (req, res) => {
 		return res.status(400).json({
 			error: 'Failed to updates the rating of an item'
 		});
+	}
+};
+
+// Search / Filters
+
+const handleSearchQuery = async (req, res, query) => {
+	try {
+		// $text because in our model title and description have text set to true
+		if (query.island_choice === 'all') {
+			const items = await Item.find({ $text: { $search: query.text } })
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.exec();
+
+			return res.json(items);
+		} else {
+			const items = await Item.find({
+				$and: [ { $text: { $search: query.text } }, { provider_island: query.island_choice } ]
+			});
+
+			return res.json(items);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on query search: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on query search'
+		});
+	}
+};
+
+const handleIslandQuery = async (req, res, island) => {
+	try {
+		if (island === 'all') {
+			const items = await Item.find({})
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		} else {
+			const items = await Item.find({ provider_island: island })
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on island selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on island selection'
+		});
+	}
+};
+
+const handleCategoryQuery = async (req, res, category) => {
+	try {
+		const items = await Item.find({ category: category })
+			.populate('category', '_id name')
+			.populate('subs', '_id name')
+			.sort({ createdAt: -1 })
+			.exec();
+
+		return res.json(items);
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on categories selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on categories selection'
+		});
+	}
+};
+
+const handleRatingQuery = async (req, res, rating) => {
+	try {
+		if (rating === '0') {
+			const items = await Item.find({})
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		} else {
+			Item.aggregate([
+				{
+					$project: {
+						document: '$$ROOT',
+						floorAverage: {
+							$floor: { $avg: '$ratings.star' }
+						}
+					}
+				},
+				{ $match: { floorAverage: parseInt(rating) } }
+			]).exec((err, aggregate) => {
+				if (err) {
+					console.log(`====> AGGREGATE ERROR (Rating query): ${err}`);
+					return res.status(400).json({
+						error: 'AGGREGATE ERROR (Rating query)'
+					});
+				}
+				console.log(aggregate);
+				Item.find({ _id: aggregate })
+					.populate('category', '_id name')
+					.populate('subs', '_id name')
+					.exec((err, items) => {
+						if (err) {
+							console.log(`====> ITEM AGGREGATE ERROR: ${err}`);
+							return res.status(400).json({
+								error: 'ITEM AGGREGATE ERROR'
+							});
+						}
+
+						return res.json(items);
+					});
+			});
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on island selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on island selection'
+		});
+	}
+};
+
+const handleSubQuery = async (req, res, sub) => {
+	try {
+		const items = await Item.find({ subs: sub })
+			.populate('category', '_id name')
+			.populate('subs', '_id name')
+			.sort({ createdAt: -1 })
+			.exec();
+
+		return res.json(items);
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on categories selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on categories selection'
+		});
+	}
+};
+
+/**
+ * This function fetches items based on filters
+ * @param {*} req 
+ * @param {*} res
+ * @returns an array of item object
+ * @reviewed NO
+ */
+exports.searchFilters = async (req, res) => {
+	const { query, island, category, rating, sub } = req.body;
+
+	if (query) {
+		await handleSearchQuery(req, res, query);
+	}
+
+	if (island) {
+		await handleIslandQuery(req, res, island);
+	}
+
+	if (category) {
+		await handleCategoryQuery(req, res, category);
+	}
+
+	if (rating) {
+		await handleRatingQuery(req, res, rating);
+	}
+
+	if (sub) {
+		await handleSubQuery(req, res, sub);
 	}
 };
