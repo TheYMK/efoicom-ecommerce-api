@@ -696,6 +696,7 @@ exports.searchFilters = async (req, res) => {
 	}
 
 	if (category) {
+		console.log(category);
 		await handleCategoryQuery(req, res, category);
 	}
 
