@@ -544,7 +544,7 @@ const handleSearchQuery = async (req, res, query) => {
 
 const handleIslandQuery = async (req, res, island) => {
 	try {
-		if (island === 'all') {
+		if (island === 'allIslands') {
 			const items = await Item.find({})
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
