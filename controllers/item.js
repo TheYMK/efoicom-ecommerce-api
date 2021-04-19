@@ -577,9 +577,9 @@ const handleCategoryQuery = async (req, res, category) => {
 
 		return res.json(items);
 	} catch (err) {
-		console.log(`====> Failed to fetches items based on categories selection: {Error: ${err}}`);
+		console.log(`====> Failed to fetch items based on categories selection: {Error: ${err}}`);
 		return res.status(400).json({
-			error: 'Failed to fetches items based on categories selection'
+			error: 'Failed to fetch items based on categories selection'
 		});
 	}
 };

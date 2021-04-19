@@ -122,6 +122,7 @@ exports.list = async (req, res) => {
 		.populate('blogcategories', '_id name slug')
 		.populate('tags', '_id name slug')
 		.select('_id title slug excerpt blogcategories tags postedBy createdAt image updatedAt')
+		.sort({ createdAt: -1 })
 		.exec((err, data) => {
 			if (err) {
 				return res.status(400).json({
@@ -339,4 +340,38 @@ exports.listRelated = (req, res) => {
 
 			res.json(blogs);
 		});
+};
+
+const handleBlogCategoryQuery = async (req, res, blogcategory) => {
+	try {
+		if (blogcategory === 'all') {
+			const blogs = await Blog.find()
+				.populate('blogcategories', '_id name slug')
+				.populate('tags', '_id name slug')
+				.sort({ createdAt: -1 })
+				.exec();
+
+			return res.json(blogs);
+		} else {
+			const blogs = await Blog.find({ blogcategories: blogcategory })
+				.populate('blogcategories', '_id name slug')
+				.populate('tags', '_id name slug')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(blogs);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetch blogs based on categories selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetch blogs based on categories selection'
+		});
+	}
+};
+
+exports.blogSearchFilters = async (req, res) => {
+	const { blogcategory } = req.body;
+
+	if (blogcategory) {
+		await handleBlogCategoryQuery(req, res, blogcategory);
+	}
 };

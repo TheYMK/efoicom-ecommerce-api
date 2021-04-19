@@ -10,7 +10,8 @@ const {
 	read,
 	remove,
 	update,
-	listRelated
+	listRelated,
+	blogSearchFilters
 } = require('../../controllers/blog');
 // middlewares
 const { authCheck, adminCheck } = require('../../middlewares/auth');
@@ -24,5 +25,6 @@ router.get('/blog/:slug', read);
 router.delete('/admin/blog/:slug', authCheck, adminCheck, remove);
 router.put('/admin/blog/:slug', authCheck, adminCheck, update);
 router.post('/blog/related', listRelated);
+router.post('/blog/search/filters', blogSearchFilters);
 
 module.exports = router;
