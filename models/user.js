@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema(
 		email: {
 			type: String,
 			unique: true,
+			lowercase: true,
 			required: [ true, 'Email is required' ],
 			index: true
 		},
@@ -39,11 +40,13 @@ const userSchema = new mongoose.Schema(
 		},
 		city: {
 			type: String,
-			required: [ true, 'City name is required' ]
+			required: [ true, 'City name is required' ],
+			lowercase: true
 		},
 		address: {
 			type: String,
-			required: [ true, 'Address is required' ]
+			required: [ true, 'Address is required' ],
+			lowercase: true
 		},
 		reference_zone: {
 			type: String

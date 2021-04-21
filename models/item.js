@@ -60,8 +60,10 @@ const itemSchema = new mongoose.Schema(
 		provider_address: {
 			type: String,
 			required: true,
+			lowercase: true,
 			maxlength: 2000
 		},
+		// This has to go out. Island information will be found in the zone document
 		provider_island: {
 			type: String,
 			required: [ true, 'Island name is required' ],
