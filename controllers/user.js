@@ -47,7 +47,11 @@ exports.getCounts = async (req, res) => {
  */
 exports.getTotalRefRequests = async (req, res) => {
 	try {
-		const requests = await User.find({ $and: [ { referent_account_approval: 'on hold' }, { role: 'referent' } ] });
+		const requests = await User.find({
+			$and: [ { referent_account_approval: 'on hold' }, { role: 'referent' } ]
+		})
+			.populate('reference_zone')
+			.exec();
 
 		res.json(requests);
 	} catch (err) {
@@ -106,7 +110,10 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
  */
 exports.getAllReferents = async (req, res) => {
 	try {
-		const requests = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] });
+		const requests = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] })
+			.populate('reference_zone')
+			.exec();
+
 		res.json(requests);
 	} catch (err) {
 		console.log(`====> Failed to get all approved referents: {Error: ${err}}`);
@@ -214,7 +221,7 @@ exports.updateAdminPassword = async (req, res) => {
  */
 exports.getSingleReferentByEmail = async (req, res) => {
 	try {
-		const foundReferent = await User.findOne({ email: req.params.email }).exec();
+		const foundReferent = await User.findOne({ email: req.params.email }).populate('reference_zone').exec();
 
 		res.json(foundReferent);
 	} catch (err) {
@@ -263,6 +270,7 @@ exports.addItemToWishlist = async (req, res) => {
 exports.getUserWishlist = async (req, res) => {
 	try {
 		const wishlist = await User.findOne({ email: req.user.email }).select('wishlist').populate('wishlist').exec();
+
 		res.json(wishlist);
 	} catch (err) {
 		console.log(`====> Failed to fetch items on the wishlist: {Error: ${err}}`);

@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema(
 		],
 		island: {
 			type: String,
+			lowercase: true,
 			required: [ true, 'Island name is required' ],
 			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
 		},
@@ -49,8 +50,8 @@ const userSchema = new mongoose.Schema(
 			lowercase: true
 		},
 		reference_zone: {
-			type: String
-			// enum: [ 'zone1', 'zone2', 'zone3', 'zone4', 'zone5', 'zone6', 'zone7' ]
+			type: ObjectId,
+			ref: 'Zone'
 		},
 		referent_account_approval: {
 			type: String,

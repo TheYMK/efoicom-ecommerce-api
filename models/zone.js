@@ -15,22 +15,7 @@ const zoneSchema = new mongoose.Schema(
 			type: String,
 			unique: true,
 			lowercase: true,
-			lowercase: true,
 			index: true
-		},
-		district: {
-			type: String,
-			trim: true,
-			lowercase: true,
-			required: true,
-			text: true
-		},
-		city: {
-			type: String,
-			trim: true,
-			lowercase: true,
-			required: true,
-			text: true
 		},
 		island: {
 			type: String,

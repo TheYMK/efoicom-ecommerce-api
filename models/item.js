@@ -64,16 +64,11 @@ const itemSchema = new mongoose.Schema(
 			maxlength: 2000
 		},
 		// This has to go out. Island information will be found in the zone document
-		provider_island: {
-			type: String,
-			required: [ true, 'Island name is required' ],
-			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+		reference_zone: {
+			type: ObjectId,
+			ref: 'Zone',
+			required: true
 		},
-		// availability: {
-		// 	type: String,
-		// 	required: true,
-		// 	enum: [ 'en stock', 'non disponible' ]
-		// },
 		item_approval_status: {
 			type: String,
 			default: 'on hold',

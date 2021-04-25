@@ -19,19 +19,34 @@ exports.createOrUpdateUser = async (req, res) => {
 			console.log(`====> Found a user (/api/create-or-update-user)`);
 			res.json(user);
 		} else {
-			const newUser = await new User({
-				name: `${first_name} ${last_name}`,
-				email: email,
-				phone_number: phone_number,
-				role: account_type,
-				city: city,
-				island: island,
-				address: address,
-				reference_zone: reference_zone,
-				picture
-			}).save();
-			console.log('====> Created a new user (/api/create-or-update-user)', newUser);
-			res.json(newUser);
+			if (reference_zone === '') {
+				const newUser = await new User({
+					name: `${first_name} ${last_name}`,
+					email: email,
+					phone_number: phone_number,
+					role: account_type,
+					city: city,
+					island: island,
+					address: address,
+					picture
+				}).save();
+				console.log('====> Created a new user (/api/create-or-update-user)', newUser);
+				return res.json(newUser);
+			} else {
+				const newUser = await new User({
+					name: `${first_name} ${last_name}`,
+					email: email,
+					phone_number: phone_number,
+					role: account_type,
+					city: city,
+					island: island,
+					address: address,
+					reference_zone: reference_zone,
+					picture
+				}).save();
+				console.log('====> Created a new user (/api/create-or-update-user)', newUser);
+				res.json(newUser);
+			}
 		}
 	} catch (err) {
 		console.log(`====> Failed to create or update a user: {Error: ${err}}`);

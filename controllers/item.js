@@ -13,6 +13,10 @@ exports.createItem = async (req, res) => {
 	try {
 		req.body.slug = slugify(req.body.title);
 		req.body.referent_email = req.user.email;
+		const foundReferent = await User.findOne({ email: req.user.email }).exec();
+
+		req.body.reference_zone = foundReferent.reference_zone;
+
 		const newItem = await new Item(req.body).save();
 		res.json(newItem);
 	} catch (err) {
@@ -152,6 +156,7 @@ exports.getAllItems = async (req, res) => {
 		})
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		const allApprovedServices = await Item.find({
@@ -159,6 +164,7 @@ exports.getAllItems = async (req, res) => {
 		})
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		res.json({
@@ -251,6 +257,7 @@ exports.getTotalItemsRequests = async (req, res) => {
 		})
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		res.json(itemsRequests);
@@ -359,6 +366,7 @@ exports.getAllRecommendedItems = async (req, res) => {
 		})
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.limit(4)
 			.exec();
 
@@ -367,6 +375,7 @@ exports.getAllRecommendedItems = async (req, res) => {
 		})
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.limit(4)
 			.exec();
 
@@ -397,6 +406,7 @@ exports.getRelatedItems = async (req, res) => {
 			.limit(4)
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		res.json(relatedItems);
@@ -423,6 +433,7 @@ exports.getAllProductsByCount = async (req, res) => {
 			.limit(parseInt(req.params.count))
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		// const allApprovedServices = await Item.find({
@@ -458,6 +469,7 @@ exports.getAllServicesByCount = async (req, res) => {
 			.limit(parseInt(req.params.count))
 			.populate('category')
 			.populate('subs')
+			.populate('reference_zone')
 			.exec();
 
 		res.json({
@@ -524,6 +536,7 @@ const handleSearchQuery = async (req, res, query) => {
 			const items = await Item.find({ $text: { $search: query.text } })
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.exec();
 
 			return res.json(items);
@@ -548,6 +561,7 @@ const handleIslandQuery = async (req, res, island) => {
 			const items = await Item.find({})
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.sort({ createdAt: -1 })
 				.exec();
 			return res.json(items);
@@ -555,6 +569,7 @@ const handleIslandQuery = async (req, res, island) => {
 			const items = await Item.find({ provider_island: island })
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.sort({ createdAt: -1 })
 				.exec();
 			return res.json(items);
@@ -572,6 +587,7 @@ const handleCategoryQuery = async (req, res, category) => {
 		const items = await Item.find({ category: category })
 			.populate('category', '_id name')
 			.populate('subs', '_id name')
+			.populate('reference_zone')
 			.sort({ createdAt: -1 })
 			.exec();
 
@@ -590,6 +606,7 @@ const handleRatingQuery = async (req, res, rating) => {
 			const items = await Item.find({})
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.sort({ createdAt: -1 })
 				.exec();
 			return res.json(items);
@@ -640,6 +657,7 @@ const handleSubQuery = async (req, res, sub) => {
 		const items = await Item.find({ subs: sub })
 			.populate('category', '_id name')
 			.populate('subs', '_id name')
+			.populate('reference_zone')
 			.sort({ createdAt: -1 })
 			.exec();
 
@@ -658,6 +676,7 @@ const handleTypeQuery = async (req, res, type) => {
 			const items = await Item.find({})
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.sort({ createdAt: -1 })
 				.exec();
 			return res.json(items);
@@ -665,6 +684,7 @@ const handleTypeQuery = async (req, res, type) => {
 			const items = await Item.find({ item_type: type })
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
+				.populate('reference_zone')
 				.sort({ createdAt: -1 })
 				.exec();
 			return res.json(items);

@@ -9,14 +9,12 @@ const slugify = require('slugify');
  * @reviewed NO
  */
 exports.create = async (req, res) => {
-	const { name, district, city, island } = req.body;
-
+	const { name, island } = req.body;
+	const slug = slugify(name);
 	try {
 		const newZone = await new Zone({
 			name: name,
-			slug: slugify(name),
-			district: district,
-			city: city,
+			slug: slug,
 			island: island
 		}).save();
 
@@ -77,11 +75,13 @@ exports.remove = async (req, res) => {
  * @reviewed NO
  */
 exports.update = async (req, res) => {
-	const { name, city, district, island } = req.body;
+	const { name, island } = req.body;
+	const slug = slugify(name);
+
 	try {
 		const updatedZone = await Zone.findOneAndUpdate(
 			{ slug: req.params.slug },
-			{ name, city, district, island },
+			{ name, island, slug: slug },
 			{ new: true }
 		).exec();
 
