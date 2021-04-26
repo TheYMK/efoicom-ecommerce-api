@@ -1,6 +1,7 @@
 const Item = require('../models/item');
 const slugify = require('slugify');
 const User = require('../models/user');
+const Zone = require('../models/zone');
 
 /**
  * This function creates an item
@@ -16,6 +17,11 @@ exports.createItem = async (req, res) => {
 		const foundReferent = await User.findOne({ email: req.user.email }).exec();
 
 		req.body.reference_zone = foundReferent.reference_zone;
+
+		const foundZone = await Zone.findById(foundReferent.reference_zone);
+
+		req.body.zone_island = foundZone.island;
+		req.body.zone_name = foundZone.name;
 
 		const newItem = await new Item(req.body).save();
 		res.json(newItem);
@@ -542,8 +548,12 @@ const handleSearchQuery = async (req, res, query) => {
 			return res.json(items);
 		} else {
 			const items = await Item.find({
-				$and: [ { $text: { $search: query.text } }, { provider_island: query.island_choice } ]
-			});
+				$and: [ { $text: { $search: query.text } }, { zone_island: query.island_choice } ]
+			})
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.populate('reference_zone')
+				.exec();
 
 			return res.json(items);
 		}
@@ -566,7 +576,7 @@ const handleIslandQuery = async (req, res, island) => {
 				.exec();
 			return res.json(items);
 		} else {
-			const items = await Item.find({ provider_island: island })
+			const items = await Item.find({ zone_island: island })
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
 				.populate('reference_zone')
@@ -697,6 +707,33 @@ const handleTypeQuery = async (req, res, type) => {
 	}
 };
 
+const handleZoneQuery = async (req, res, zone) => {
+	try {
+		if (zone === 'allzones') {
+			const items = await Item.find({})
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		} else {
+			const items = await Item.find({ reference_zone: zone })
+				.populate('category', '_id name')
+				.populate('subs', '_id name')
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(items);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetches items based on item zone selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetches items based on item zone selection'
+		});
+	}
+};
+
 /**
  * This function fetches items based on filters
  * @param {*} req 
@@ -705,7 +742,7 @@ const handleTypeQuery = async (req, res, type) => {
  * @reviewed NO
  */
 exports.searchFilters = async (req, res) => {
-	const { query, island, category, rating, sub, type } = req.body;
+	const { query, island, category, rating, sub, type, zone } = req.body;
 
 	if (query) {
 		await handleSearchQuery(req, res, query);
@@ -730,5 +767,9 @@ exports.searchFilters = async (req, res) => {
 
 	if (type) {
 		await handleTypeQuery(req, res, type);
+	}
+
+	if (zone) {
+		await handleZoneQuery(req, res, zone);
 	}
 };

@@ -63,7 +63,15 @@ const itemSchema = new mongoose.Schema(
 			lowercase: true,
 			maxlength: 2000
 		},
-		// This has to go out. Island information will be found in the zone document
+		zone_island: {
+			type: String,
+			required: [ true, 'Island name is required' ],
+			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+		},
+		zone_name: {
+			type: String,
+			required: true
+		},
 		reference_zone: {
 			type: ObjectId,
 			ref: 'Zone',
