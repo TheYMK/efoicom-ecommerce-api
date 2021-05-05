@@ -36,7 +36,7 @@ exports.create = async (req, res) => {
  */
 exports.list = async (req, res) => {
 	try {
-		const zones = await Zone.find({}).exec();
+		const zones = await Zone.find({}).sort({ createdAt: -1 }).exec();
 
 		return res.json(zones);
 	} catch (err) {

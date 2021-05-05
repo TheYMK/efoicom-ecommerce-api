@@ -66,7 +66,7 @@ const itemSchema = new mongoose.Schema(
 		zone_island: {
 			type: String,
 			required: [ true, 'Island name is required' ],
-			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+			enum: [ 'ndzuwani', 'ngazidja', 'mwali' ]
 		},
 		zone_name: {
 			type: String,

@@ -51,6 +51,7 @@ exports.getTotalRefRequests = async (req, res) => {
 			$and: [ { referent_account_approval: 'on hold' }, { role: 'referent' } ]
 		})
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.exec();
 
 		res.json(requests);
@@ -112,6 +113,7 @@ exports.getAllReferents = async (req, res) => {
 	try {
 		const requests = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] })
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.exec();
 
 		res.json(requests);
@@ -321,6 +323,26 @@ exports.getUserWishlistCount = async (req, res) => {
 		console.log(`====> Failed to fetch items on the wishlist: {Error: ${err}}`);
 		return res.status(400).json({
 			error: 'Failed to fetch items on the wishlist'
+		});
+	}
+};
+
+/**
+ * This function fetches all approved customers accounts
+ * @param {*} req 
+ * @param {*} res 
+ * @returns an array of objects
+ * @reviewed No
+ */
+exports.getAllCustomers = async (req, res) => {
+	try {
+		const customers = await User.find({ role: 'customer' }).sort({ createdAt: -1 }).exec();
+
+		res.json(customers);
+	} catch (err) {
+		console.log(`====> Failed to get all customers: {Error: ${err}}`);
+		res.status(400).json({
+			error: 'Failed to get all customers'
 		});
 	}
 };

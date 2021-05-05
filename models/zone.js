@@ -20,7 +20,7 @@ const zoneSchema = new mongoose.Schema(
 		island: {
 			type: String,
 			required: [ true, 'Island name is required' ],
-			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+			enum: [ 'ndzuwani', 'ngazidja', 'mwali' ]
 		}
 	},
 	{ timestamps: true }

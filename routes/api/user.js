@@ -16,7 +16,8 @@ const {
 	addItemToWishlist,
 	getUserWishlist,
 	removeFromWishlist,
-	getUserWishlistCount
+	getUserWishlistCount,
+	getAllCustomers
 } = require('../../controllers/user');
 
 router.get('/get-counts', getCounts);
@@ -32,6 +33,7 @@ router.put('/admin/referent/:id', authCheck, adminCheck, deleteReferentUser);
 router.put('/admin/account-update', authCheck, adminCheck, updateAdminAccount);
 router.put('/admin/password-update', authCheck, adminCheck, updateAdminPassword);
 router.get('/referent/:email', getSingleReferentByEmail);
+router.get('/customer/all', getAllCustomers);
 // wishlist
 router.post('/wishlist/add', authCheck, addItemToWishlist);
 router.get('/user/wishlist/get', authCheck, getUserWishlist);

@@ -37,7 +37,7 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			lowercase: true,
 			required: [ true, 'Island name is required' ],
-			enum: [ 'anjouan', 'ngazidja', 'mohéli' ]
+			enum: [ 'ndzuwani', 'ngazidja', 'mwali' ]
 		},
 		city: {
 			type: String,

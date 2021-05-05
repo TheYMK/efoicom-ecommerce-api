@@ -163,6 +163,7 @@ exports.getAllItems = async (req, res) => {
 			.populate('category')
 			.populate('subs')
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.exec();
 
 		const allApprovedServices = await Item.find({
@@ -171,6 +172,7 @@ exports.getAllItems = async (req, res) => {
 			.populate('category')
 			.populate('subs')
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.exec();
 
 		res.json({
@@ -264,6 +266,7 @@ exports.getTotalItemsRequests = async (req, res) => {
 			.populate('category')
 			.populate('subs')
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.exec();
 
 		res.json(itemsRequests);
@@ -373,6 +376,7 @@ exports.getAllRecommendedItems = async (req, res) => {
 			.populate('category')
 			.populate('subs')
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.limit(4)
 			.exec();
 
@@ -382,6 +386,7 @@ exports.getAllRecommendedItems = async (req, res) => {
 			.populate('category')
 			.populate('subs')
 			.populate('reference_zone')
+			.sort({ createdAt: -1 })
 			.limit(4)
 			.exec();
 
