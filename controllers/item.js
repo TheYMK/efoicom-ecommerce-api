@@ -590,9 +590,9 @@ const handleIslandQuery = async (req, res, island) => {
 			return res.json(items);
 		}
 	} catch (err) {
-		console.log(`====> Failed to fetches items based on island selection: {Error: ${err}}`);
+		console.log(`====> Failed to fetch items based on island selection: {Error: ${err}}`);
 		return res.status(400).json({
-			error: 'Failed to fetches items based on island selection'
+			error: 'Failed to fetch items based on island selection'
 		});
 	}
 };

@@ -111,12 +111,12 @@ exports.updateReferentAccountApprovalStatus = async (req, res) => {
  */
 exports.getAllReferents = async (req, res) => {
 	try {
-		const requests = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] })
+		const referents = await User.find({ $and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ] })
 			.populate('reference_zone')
 			.sort({ createdAt: -1 })
 			.exec();
 
-		res.json(requests);
+		res.json(referents);
 	} catch (err) {
 		console.log(`====> Failed to get all approved referents: {Error: ${err}}`);
 		res.status(400).json({
@@ -344,5 +344,96 @@ exports.getAllCustomers = async (req, res) => {
 		res.status(400).json({
 			error: 'Failed to get all customers'
 		});
+	}
+};
+
+const handleIslandSearch = async (req, res, island) => {
+	try {
+		if (island === 'allIslands') {
+			const referents = await User.find({
+				$and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ]
+			})
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(referents);
+		} else {
+			const referents = await User.find({
+				$and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ]
+			})
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+
+			const results = [];
+
+			for (let i = 0; i < referents.length; i++) {
+				if (referents[i].reference_zone.island === island) {
+					results.push(referents[i]);
+				}
+			}
+			// const results = referents.find(({ reference_zone }) => reference_zone.island === island);
+			return res.json(results);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetch referents based on island selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetch referents based on island selection'
+		});
+	}
+};
+
+const handleZoneNameSearch = async (req, res, zone_name) => {
+	try {
+		if (zone_name === 'allZones') {
+			const referents = await User.find({
+				$and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ]
+			})
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+			return res.json(referents);
+		} else {
+			const referents = await User.find({
+				$and: [ { referent_account_approval: 'approved' }, { role: 'referent' } ]
+			})
+				.populate('reference_zone')
+				.sort({ createdAt: -1 })
+				.exec();
+
+			const results = [];
+
+			for (let i = 0; i < referents.length; i++) {
+				if (referents[i].reference_zone.name === zone_name) {
+					results.push(referents[i]);
+				}
+			}
+			// const results = referents.find(({ reference_zone }) => reference_zone.island === island);
+			return res.json(results);
+		}
+	} catch (err) {
+		console.log(`====> Failed to fetch referents based on zone name selection: {Error: ${err}}`);
+		return res.status(400).json({
+			error: 'Failed to fetch referents based on zone name selection'
+		});
+	}
+};
+
+/**
+ * This function fetches referent users based on filters
+ * @param {*} req 
+ * @param {*} res
+ * @returns an array of item object
+ * @reviewed NO
+ */
+exports.referentSearchFilters = async (req, res) => {
+	const { island, zone_name } = req.body;
+
+	if (island) {
+		await handleIslandSearch(req, res, island);
+	}
+
+	if (zone_name) {
+		await handleZoneNameSearch(req, res, zone_name);
 	}
 };

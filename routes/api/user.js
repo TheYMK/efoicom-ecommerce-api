@@ -17,7 +17,8 @@ const {
 	getUserWishlist,
 	removeFromWishlist,
 	getUserWishlistCount,
-	getAllCustomers
+	getAllCustomers,
+	referentSearchFilters
 } = require('../../controllers/user');
 
 router.get('/get-counts', getCounts);
@@ -39,4 +40,5 @@ router.post('/wishlist/add', authCheck, addItemToWishlist);
 router.get('/user/wishlist/get', authCheck, getUserWishlist);
 router.put('/user/wishlist/remove/:id', authCheck, removeFromWishlist);
 router.get('/user/wishlist/count', authCheck, getUserWishlistCount);
+router.post('/referent/search/filters', referentSearchFilters);
 module.exports = router;
