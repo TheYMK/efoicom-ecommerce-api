@@ -12,3 +12,14 @@ exports.contactReferentFormValidator = [
 		.isLength({ min: 20 })
 		.withMessage('Le message doit contenir au moins 20 caractères')
 ];
+
+exports.contactFormValidator = [
+	check('name').not().isEmpty().withMessage('Le nom est requis'),
+	check('subject').not().isEmpty().withMessage(`L'objet du message est requis`),
+	check('email').isEmail().withMessage(`Votre email n'est pas correcte`),
+	check('message')
+		.not()
+		.isEmpty()
+		.isLength({ min: 20 })
+		.withMessage('Le message doit contenir au moins 20 caractères')
+];
