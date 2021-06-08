@@ -11,6 +11,13 @@ const slugify = require('slugify');
 exports.create = async (req, res) => {
 	const { name, island } = req.body;
 	const slug = slugify(name);
+
+	if (!name || !island) {
+		return res.status(400).json({
+			error: 'Failed to create a zone'
+		});
+	}
+
 	try {
 		const newZone = await new Zone({
 			name: name,
@@ -76,6 +83,13 @@ exports.remove = async (req, res) => {
  */
 exports.update = async (req, res) => {
 	const { name, island } = req.body;
+
+	if (!name || !island) {
+		return res.status(400).json({
+			error: 'Failed to update a reference zone'
+		});
+	}
+
 	const slug = slugify(name);
 
 	try {
@@ -87,9 +101,9 @@ exports.update = async (req, res) => {
 
 		return res.json(updatedZone);
 	} catch (err) {
-		console.log(`====> Failed to updates a reference zone: {Error: ${err}} `);
+		console.log(`====> Failed to update a reference zone: {Error: ${err}} `);
 		res.status(400).json({
-			error: 'Failed to fetch updates a reference zone'
+			error: 'Failed to update a reference zone'
 		});
 	}
 };

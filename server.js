@@ -23,7 +23,7 @@ connectDB();
 //                   Middlewares
 // ============================================================
 app.use(morgan('dev'));
-app.use(bodyParser.json({ limit: '2mb' }));
+app.use(express.json({ limit: '2mb' }));
 app.use(cors());
 // ============================================================
 //                      Route Middlewares
@@ -37,3 +37,5 @@ const port = process.env.PORT || 8000;
 app.listen(port, () => {
 	console.log(`====> EFOICOM server running on port ${port}...`);
 });
+
+// module.exports = app;

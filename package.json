@@ -5,7 +5,14 @@
   "main": "server.js",
   "scripts": {
     "dev": "nodemon server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "jest --watchAll --no-cache"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "./test/setup.js"
+    ]
   },
   "author": "Kaym Kassai",
   "license": "ISC",
@@ -29,6 +36,9 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "jest": "^27.0.4",
+    "mongodb-memory-server": "^6.9.6",
+    "nodemon": "^2.0.7",
+    "supertest": "^6.1.3"
   }
 }
