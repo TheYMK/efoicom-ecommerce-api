@@ -8,7 +8,7 @@ interface ItemAttrs {
 	description: string;
 	category: mongoose.ObjectId;
 	subs: mongoose.ObjectId[];
-	images: Array<string>;
+	images: Array<any>;
 	ratings: Array<any>;
 	provider_name: string;
 	provider_phone_number: string;
@@ -138,6 +138,10 @@ const itemSchema = new mongoose.Schema(
 	},
 	{ timestamps: true }
 );
+
+itemSchema.statics.build = (attrs: ItemAttrs) => {
+	return new Item(attrs);
+};
 
 const Item = mongoose.model<ItemDoc, ItemModel>('Item', itemSchema);
 

@@ -9,8 +9,6 @@ cloudinary.v2.config({
 	api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-console.log(`The config: ${cloudinary}`);
-
 // image is sent in JSON format
 export const upload = async (req: Request, res: Response) => {
 	let result = await cloudinary.v2.uploader.upload(req.body.image, {

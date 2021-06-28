@@ -33,12 +33,35 @@ export const createItem = async (req: Request, res: Response) => {
 		req.body.zone_island = foundZone.island;
 		req.body.zone_name = foundZone.name;
 
-		const newItem = Item.build(req.body);
+		req.body.ratings = [];
+		req.body.item_approval_status = 'on hold';
+		req.body.isRecommended = false;
+
+		const newItem = Item.build({
+			title: req.body.title,
+			slug: req.body.slug,
+			reference_email: req.body.reference_email,
+			description: req.body.description,
+			category: req.body.category,
+			subs: req.body.subs,
+			images: req.body.images,
+			ratings: req.body.ratings,
+			provider_name: req.body.provider_name,
+			provider_phone_number: req.body.provider_phone_number,
+			provider_address: req.body.provider_address,
+			zone_island: req.body.zone_island,
+			zone_name: req.body.zone_name,
+			reference_zone: req.body.reference_zone,
+			item_approval_status: req.body.item_approval_status,
+			item_type: req.body.item_type,
+			isRecommended: req.body.isRecommended
+		});
 		await newItem.save();
 
 		res.json(newItem);
 	} catch (err) {
-		console.log(`====> Failed to create an item: {Error: ${err}} `);
+		console.log(err);
+		// console.log(`====> Failed to create an item: {Error: ${err}} `);
 		throw new BadRequestError('Failed to create an item');
 	}
 };
