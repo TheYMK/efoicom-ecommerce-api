@@ -16,7 +16,7 @@ export function sendEmailWithNodemailer(req: Request, res: Response, emailData: 
 		secure: false,
 		requireTLS: true,
 		auth: {
-			user: 'kaymkassai269',
+			user: 'bangwelamassiwa',
 			pass: process.env.GMAIL_APP_PASSWORD
 		},
 		tls: {

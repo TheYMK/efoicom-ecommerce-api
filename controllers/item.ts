@@ -40,7 +40,7 @@ export const createItem = async (req: Request, res: Response) => {
 		const newItem = Item.build({
 			title: req.body.title,
 			slug: req.body.slug,
-			reference_email: req.body.reference_email,
+			referent_email: req.body.referent_email,
 			description: req.body.description,
 			category: req.body.category,
 			subs: req.body.subs,

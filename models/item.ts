@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 interface ItemAttrs {
 	title: string;
 	slug: string;
-	reference_email: string;
+	referent_email: string;
 	description: string;
 	category: mongoose.ObjectId;
 	subs: mongoose.ObjectId[];
@@ -24,7 +24,7 @@ interface ItemAttrs {
 interface ItemDoc extends mongoose.Document {
 	title: string;
 	slug: string;
-	reference_email: string;
+	referent_email: string;
 	description: string;
 	category: mongoose.ObjectId;
 	subs: mongoose.ObjectId[];
