@@ -371,7 +371,11 @@ export const getRelatedItems = async (req: Request, res: Response) => {
 			throw new NotFoundError('Item not found');
 		}
 
-		const relatedItems = await Item.find({ _id: { $ne: item._id }, category: item.category })
+		const relatedItems = await Item.find({
+			_id: { $ne: item._id },
+			category: item.category,
+			item_approval_status: 'approved'
+		})
 			.limit(4)
 			.populate('category')
 			.populate('subs')

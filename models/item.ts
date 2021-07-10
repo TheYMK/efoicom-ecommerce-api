@@ -51,7 +51,6 @@ const itemSchema = new mongoose.Schema(
 			type: String,
 			trim: true,
 			required: true,
-			maxlength: 32,
 			text: true
 		},
 		slug: {
