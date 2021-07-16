@@ -505,7 +505,7 @@ export const itemRating = async (req: Request, res: Response) => {
 const handleSearchQuery = async (req: Request, res: Response, query: any) => {
 	try {
 		// $text because in our model title and description have text set to true
-		if (query.island_choice === 'all') {
+		if (query.island_choice === 'allIslands') {
 			const items = await Item.find({ $text: { $search: query.text } })
 				.populate('category', '_id name')
 				.populate('subs', '_id name')
